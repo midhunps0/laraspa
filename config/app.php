@@ -168,6 +168,16 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
+        /**
+         * Module Service Providers
+         */
+        \Modules\Ynotz\AccessControl\AccessControlProvider::class,
+        \Modules\Ynotz\AppSettings\AppSettingsProvider::class,
+        \Modules\Ynotz\AuditLog\AuditLogProvider::class,
+        \Modules\Ynotz\EasyAdmin\EasyAdminProvider::class,
+        // \Modules\Ynotz\Metatags\MetaTagsProvider::class,
+        \Modules\Ynotz\SmartPages\SmartPagesProvider::class,
     ])->toArray(),
 
     /*

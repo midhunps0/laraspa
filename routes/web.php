@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ProfileController;
+use Modules\Ynotz\EasyAdmin\Services\RouteHelper;
+use Modules\Ynotz\AppSettings\Http\Controllers\AppSettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,10 +25,18 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->prefix('manage/')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    RouteHelper::getEasyRoutes(
+        modelName: 'AppSetting',
+        controller: AppSettingsController::class
+    );
+
+    Route::get('/roles-permissions', [RoleController::class, 'rolesPermissions'])->name('roles.permissions');
+    Route::post('/roles/permission-update', [RoleController::class, 'permissionUpdate'])->name('roles.update_permissions');
 });
 
 require __DIR__.'/auth.php';

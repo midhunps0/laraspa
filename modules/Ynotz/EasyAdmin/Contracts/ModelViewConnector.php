@@ -3,6 +3,8 @@ namespace Modules\Ynotz\EasyAdmin\Contracts;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\CreatePageData;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\EditPageData;
 
 interface ModelViewConnector
 {
@@ -36,7 +38,8 @@ interface ModelViewConnector
 
     public function getDownloadCols(): array;
 
-    public function getCreatePageData(): array;
+    public function getCreatePageData(): CreatePageData;
+    public function getEditPageData(int $id): EditPageData;
 
     public function getStoreValidationRules(): array;
 

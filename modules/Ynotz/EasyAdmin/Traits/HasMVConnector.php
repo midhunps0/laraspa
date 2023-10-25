@@ -4,14 +4,15 @@
  */
 namespace Modules\Ynotz\EasyAdmin\Traits;
 
-use Modules\Ynotz\EasyAdmin\Exceptions\ModelIntegrityViolationException;
+use Exception;
 use Maatwebsite\Excel\Facades\Excel;
-
+use Modules\Ynotz\EasyAdmin\Exceptions\ModelIntegrityViolationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Modules\Ynotz\EasyAdmin\ImportExports\DefaultArrayExports;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\ShowPageData;
 use Throwable;
 
 trait HasMVConnector {
@@ -59,8 +60,17 @@ trait HasMVConnector {
 
     public function show($id)
     {
-        $instance = $this->connectorService->show($id);
-        return $this->buildResponse($this->showView, ['model' => $instance]);
+        try {
+            $showPageData = $this->connectorService->getShowPageData($id);
+
+            if (!($showPageData instanceof ShowPageData)) {
+                throw new Exception('getShowPageData() of connectorService must return an instance of ' . ShowPageData::class);
+            }
+            return $this->buildResponse($this->showView, $showPageData->getData());
+        } catch (\Throwable $e) {
+            info($e);
+            return $this->buildResponse($this->errorView, ['error' => $e->__toString()]);
+        }
     }
 
     public function selectIds()
@@ -110,7 +120,7 @@ trait HasMVConnector {
             if(!$this->connectorService->authoriseCreate()) {
                 throw new AuthorizationException('User not authorised to perform this task');
             }
-            $data = $this->connectorService->getCreatePageData();
+            $data = $this->connectorService->getCreatePageData()->getData();
             return $this->buildResponse($view, $data);
         } catch (AuthorizationException $e) {
             info($e);
@@ -128,7 +138,7 @@ trait HasMVConnector {
             if(!$this->connectorService->authoriseEdit($id)) {
                 throw new AuthorizationException('User not authorised to perform this task');
             }
-            $data = $this->connectorService->getEditPageData($id);
+            $data = $this->connectorService->getEditPageData($id)->getData();
             return $this->buildResponse($view, $data);
         } catch (AuthorizationException $e) {
             info($e);

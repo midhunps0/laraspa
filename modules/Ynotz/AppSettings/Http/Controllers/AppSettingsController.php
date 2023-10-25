@@ -32,7 +32,7 @@ class AppSettingsController extends SmartController
             if(!$this->connectorService->authoriseEdit($id)) {
                 throw new AuthorizationException('User not authorised to perform this task');
             }
-            $data =$setting->value_type == 'json' ? ['setting' => $setting] :$this->connectorService->getEditPageData($id);
+            $data =$setting->value_type == 'json' ? ['setting' => $setting] :$this->connectorService->getEditPageData($id)->getData();
             return $this->buildResponse($view, $data);
         } catch (AuthorizationException $e) {
             info($e);

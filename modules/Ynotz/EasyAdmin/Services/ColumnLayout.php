@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Ynotz\EasyAdmin\Services;
 
-class ColumnLayout extends LayoutElement
+class ColumnLayout extends UILayout
 {
     public function __construct($width = "grow", $style = '')
     {

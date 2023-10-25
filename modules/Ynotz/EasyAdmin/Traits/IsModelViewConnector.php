@@ -11,6 +11,7 @@ use Modules\Ynotz\EasyAdmin\Services\FormHelper;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Auth\Access\AuthorizationException;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\CreatePageData;
 
 trait IsModelViewConnector{
     protected $modelClass;
@@ -132,6 +133,11 @@ trait IsModelViewConnector{
     private function getQuery()
     {
         return $this->query ?? $this->modelClass::query();
+    }
+
+    public function getShowPageData()
+    {
+        return ['title' => Str::ucfirst($this->getModelShortName()), 'instance' => $this->getQuery()->get()->first() ];
     }
 
     private function getItemIds($results) {
@@ -661,12 +667,12 @@ trait IsModelViewConnector{
         return [];
     }
 
-    public function getCreatePageData(): array
+    public function getCreatePageData(): CreatePageData
     {
         $sn = $this->getModelShortName();
-        return [
-            'title' => Str::plural($sn),
-            'form' => FormHelper::makeForm(
+        return new CreatePageData(
+            title: Str::plural($sn),
+            form: FormHelper::makeForm(
                 title: 'Create '.$sn,
                 id: 'form_'.Str::lower(Str::plural($sn)).'_create',
                 action_route: Str::lower(Str::plural($sn)) . '.store',
@@ -678,11 +684,11 @@ trait IsModelViewConnector{
                 label_position: 'top',
                 width: 'full',
                 type: 'easyadmin::partials.simpleform',
-            ),
-        ];
+            )
+        );
     }
 
-    public function getEditPageData($keyVal = null, $keyCol = 'id'): array
+    public function getEditPageData($keyCol = 'id', $keyVal = null): array
     {
         $instance = $this->modelClass::where($keyCol, $keyVal)
             ->get()->first();

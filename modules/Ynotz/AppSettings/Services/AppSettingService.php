@@ -6,13 +6,16 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Ynotz\EasyAdmin\Services\RowLayout;
 use Modules\Ynotz\AppSettings\Models\AppSetting;
+use Modules\Ynotz\EasyAdmin\InputUpdateResponse;
 use Modules\Ynotz\EasyAdmin\Services\FormHelper;
 use Modules\Ynotz\EasyAdmin\Services\IndexTable;
 use Modules\Ynotz\AccessControl\Models\Permission;
 use Modules\Ynotz\EasyAdmin\Services\ColumnLayout;
 use Modules\Ynotz\EasyAdmin\Traits\IsModelViewConnector;
 use Modules\Ynotz\EasyAdmin\Contracts\ModelViewConnector;
-use Modules\Ynotz\EasyAdmin\InputUpdateResponse;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\CreatePageData;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\EditPageData;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\ShowPageData;
 
 class AppSettingService implements ModelViewConnector
 {
@@ -270,12 +273,19 @@ class AppSettingService implements ModelViewConnector
         return $r;
     }
 
-    public function getCreatePageData(): array
+    public function getShowPageData($id)
+    {
+        $instance = AppSetting::find($id);
+        $title = 'App Setting: ' . $instance->name;
+        return new ShowPageData($title, $instance);
+    }
+
+    public function getCreatePageData(): CreatePageData
     {
         $sn = $this->getModelShortName();
-        return [
-            'title' => Str::plural($sn),
-            'form' => FormHelper::makeForm(
+        return new CreatePageData(
+            title: 'App Settings',
+            form: FormHelper::makeForm(
                 title: 'Create '.$sn,
                 id: 'form_'.Str::lower(Str::plural($sn)).'_create',
                 action_route: Str::lower(Str::plural($sn)) . '.store',
@@ -287,15 +297,32 @@ class AppSettingService implements ModelViewConnector
                 label_position: 'top',
                 width: '1/2',
                 type: 'easyadmin::partials.simpleform',
-            ),
-        ];
+            )
+        );
     }
 
-    public function getEditPageData($keyVal = null, $keyCol = 'id'): array
+    public function getEditPageData($keyVal = null, $keyCol = 'id'): EditPageData
     {
         $instance = $this->modelClass::where($keyCol, $keyVal)
             ->get()->first();
         $sn = $this->getModelShortName();
+        return new EditPageData(
+            title: 'users',
+            form: FormHelper::makeEditForm(
+                title: 'Edit '.$sn,
+                id: 'form_'.Str::lower(Str::plural($sn)).'_edit',
+                action_route: Str::lower(Str::plural($sn)) . '.update',
+                action_route_params: [$keyCol => $instance->$keyCol],
+                success_redirect_route: Str::lower(Str::plural($sn)). '.show',
+                cancel_route: 'dashboard',
+                items: $this->getEditFormElements($instance),
+                layout: $this->buildEditFormLayout(),
+                label_position: 'side',
+                width: 'w-3/4',
+                type: 'easyadmin::partials.simpleform',
+            ),
+            instance: $instance
+        );
         return [
             'title' => Str::plural($sn),
             'form' => FormHelper::makeEditForm(

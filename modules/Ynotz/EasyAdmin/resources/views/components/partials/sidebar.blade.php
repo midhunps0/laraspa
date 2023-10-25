@@ -16,7 +16,7 @@
             @if ($item['type'] == 'menu_group')
                 @if (!isset($item['show']) || (isset($item['show']) && $item['show']))
                 <li x-data="{group_expand: true}">
-                    <label class="flex flex-row items-center justify-start font-bold">
+                    <label class="flex flex-row items-center justify-start font-bold hover:bg-base-300">
                         <x-easyadmin::partials.menu-group title="{{$item['title']}}" icon="{{$item['icon']}}"/>
                         <span class="transition-all" :class="group_expand ? 'rotate-180' : 'rotate-0'" @click.prevent.stop="group_expand = !group_expand;">
                             <x-easyadmin::display.icon icon="easyadmin::icons.down" height="h-4" width="w-4" class="mx-1 z-20"/>

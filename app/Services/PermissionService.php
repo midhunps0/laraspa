@@ -8,6 +8,8 @@ use Modules\Ynotz\AccessControl\Models\Permission;
 use Modules\Ynotz\AuditLog\Events\BusinessActionEvent;
 use Modules\Ynotz\EasyAdmin\Traits\IsModelViewConnector;
 use Modules\Ynotz\EasyAdmin\Contracts\ModelViewConnector;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\CreatePageData;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\EditPageData;
 
 class PermissionService implements ModelViewConnector {
     use IsModelViewConnector;
@@ -51,11 +53,11 @@ class PermissionService implements ModelViewConnector {
         ];
     }
 
-    public function getCreatePageData(): array
+    public function getCreatePageData(): CreatePageData
     {
-        return [
-            'title' => 'Permission',
-            'form' => FormHelper::makeForm(
+        return new CreatePageData(
+            title: 'Roles',
+            form: FormHelper::makeForm(
                 title: 'Create Permission',
                 id: 'form_permission_create',
                 action_route: 'permissions.store',
@@ -63,15 +65,14 @@ class PermissionService implements ModelViewConnector {
                 items: $this->getCreateFormElements(),
                 label_position: 'side'
             )
-        ];
+        );
     }
 
-    public function getEditPageData($id): array
+    public function getEditPageData($id): EditPageData
     {
-        return [
-            'title' => 'Permission',
-            '_old' => ($this->modelClass)::find($id),
-            'form' => FormHelper::makeEditForm(
+        return new EditPageData(
+            title: 'Roles',
+            form: FormHelper::makeEditForm(
                 title: 'Edit Permission',
                 id: 'form_permission_create',
                 action_route: 'permissions.update',
@@ -79,8 +80,9 @@ class PermissionService implements ModelViewConnector {
                 success_redirect_route: 'permissions.index',
                 items: $this->getEditFormElements(),
                 label_position: 'side'
-            )
-        ];
+            ),
+            instance: ($this->modelClass)::find($id)
+        );
     }
 
     private function formElements(): array

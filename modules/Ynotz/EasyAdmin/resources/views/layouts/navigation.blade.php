@@ -1,12 +1,13 @@
-<nav x-ref="appnav" x-data="{ open: false, height: $el.offsetHeight, actualHeight: $el.offsetHeight  }"
-    class="bg-base-100 border-b border-base-200 overflow-hidden transition-all duration-200"
+<nav x-ref="appnav" x-data="{ open: false, height: $el.offsetHeight, actualHeight: $el.offsetHeight, opacity: 1 }"
+    class="bg-base-100 border-b border-base-200 transition-all duration-200"
 
-    :style="'height: ' + height + 'px;'"
+    :style="'height: ' + height + 'px; opacity: '+opacity"
     x-init="
         setTimeout(() => {height = $el.offsetHeight; actualHeight = $el.offsetHeight;}, 100);
     "
     @navresize.window="
         height = $event.detail.navcollapsed ? 0 : actualHeight;
+        opacity = $event.detail.navcollapsed ? 0 : 1;
         {{-- navcollapsed = $event.detail.navcollapsed; --}}
         setTimeout(() => {});
     "
@@ -15,7 +16,7 @@
     {{-- <div x-data="{ navcollapsed: false}" --}}
     {{-- x-show="!navcollapsed" --}}
     <div
-        class="px-2 md:px-4 py-2 overflow-hidden">
+        class="px-2 md:px-4 py-2">
         <div class="flex justify-between">
             <div class="flex">
                 <div class="shrink-0 flex items-center mr-2 md:hidden">
@@ -59,12 +60,15 @@
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button
-                                class="flex items-center font-medium text-accent-content hover:text-accent-content hover:border-base-200 focus:outline-none focus:text-accent-content focus:border-base-200 transition duration-150 ease-in-out bg-base-200 rounded-full py-1 px-2 text-xs">
-                                <div class="flex flex-row space-x-2 items-center">{{ Auth::user()->name }}</div>
-
-                                <div class="ml-1">
-                                    <x-easyadmin::display.icon icon="easyadmin::icons.user" />
-                                </div>
+                                class="flex items-center font-medium text-accent-content hover:text-accent-content hover:border-base-200 focus:outline-none focus:text-accent-content focus:border-base-200 transition duration-150 ease-in-out p-1 pr-0 text-xs">
+                                <span class="flex flex-row space-x-2 items-center">{{ Auth::user()->name }}</span>
+                                @if (Auth::user()->getSingleMediaUrl('profile_picture') != null)
+                                <img src="{{Auth::user()->getSingleMediaUrl('profile_picture')}}" alt="" class="inline-block w-5 h-5 rounded-full">
+                                @else
+                                <span class="ml-1 rounded-full w-6 h-6 flex flex-row justify-center items-center p-1 border border-base-content border-opacity-20">
+                                    <x-easyadmin::display.icon icon="easyadmin::icons.user" width="w-5" height="h-5" />
+                                </span>
+                                @endif
                             </button>
                         </x-slot>
                         <x-slot name="content">
@@ -89,7 +93,7 @@
             <!-- Hamburger -->
             <div class="-mr-2 flex space-x-2 items-center md:hidden">
                 <x-easyadmin::utils.theme-switch />
-                <button @click="open = ! open"
+                <button @click="open = !open"
                     class="inline-flex items-center justify-center p-2 rounded-md text-base-content hover:text-base-content hover:bg-base-100 focus:outline-none focus:bg-base-100 focus:text-base-content transition duration-150 ease-in-out">
                     <x-easyadmin::display.icon icon="easyadmin::icons.user" height="h-6" width="w-6" />
                     {{-- <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">

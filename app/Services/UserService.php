@@ -11,6 +11,8 @@ use Modules\Ynotz\EasyAdmin\Services\IndexTable;
 use Modules\Ynotz\AuditLog\Events\BusinessActionEvent;
 use Modules\Ynotz\EasyAdmin\Traits\IsModelViewConnector;
 use Modules\Ynotz\EasyAdmin\Contracts\ModelViewConnector;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\CreatePageData;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\EditPageData;
 
 class UserService implements ModelViewConnector {
     use IsModelViewConnector;
@@ -105,11 +107,11 @@ class UserService implements ModelViewConnector {
         ];
     }
 
-    public function getCreatePageData(): array
+    public function getCreatePageData(): CreatePageData
     {
-        return [
-            'title' => 'Users',
-            'form' => FormHelper::makeForm(
+        return new CreatePageData(
+            title: 'Users',
+            form: FormHelper::makeForm(
                 title: 'Create User',
                 id: 'form_users_create',
                 action_route: 'users.store',
@@ -117,15 +119,14 @@ class UserService implements ModelViewConnector {
                 items: $this->getCreateFormElements(),
                 label_position: 'side'
             )
-        ];
+        );
     }
 
-    public function getEditPageData($id): array
+    public function getEditPageData($id): EditPageData
     {
-        return [
-            'title' => 'Users',
-            '_old' => ($this->modelClass)::find($id),
-            'form' => FormHelper::makeEditForm(
+        return new EditPageData(
+            title: 'users',
+            form: FormHelper::makeEditForm(
                 title: 'Edit User',
                 id: 'form_users_create',
                 action_route: 'users.update',
@@ -133,8 +134,9 @@ class UserService implements ModelViewConnector {
                 success_redirect_route: 'users.index',
                 items: $this->getEditFormElements(),
                 label_position: 'side'
-            )
-        ];
+            ),
+            instance: ($this->modelClass)::find($id)
+        );
     }
 
     private function formElements(): array

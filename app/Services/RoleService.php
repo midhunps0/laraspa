@@ -10,6 +10,8 @@ use Modules\Ynotz\AuditLog\Events\BusinessActionEvent;
 use Modules\Ynotz\EasyAdmin\Traits\IsModelViewConnector;
 use Modules\Ynotz\EasyAdmin\Contracts\ModelViewConnector;
 use Modules\Ynotz\AccessControl\Services\PermissionService;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\CreatePageData;
+use Modules\Ynotz\EasyAdmin\RenderDataFormats\EditPageData;
 use Modules\Ynotz\EasyAdmin\Services\TableHelper;
 
 class RoleService implements ModelViewConnector {
@@ -82,11 +84,11 @@ class RoleService implements ModelViewConnector {
         ];
     }
 
-    public function getCreatePageData(): array
+    public function getCreatePageData(): CreatePageData
     {
-        return [
-            'title' => 'Role',
-            'form' => FormHelper::makeForm(
+        return new CreatePageData(
+            title: 'Roles',
+            form: FormHelper::makeForm(
                 title: 'Create Role',
                 id: 'form_role_create',
                 action_route: 'roles.store',
@@ -94,15 +96,14 @@ class RoleService implements ModelViewConnector {
                 items: $this->getCreateFormElements(),
                 label_position: 'side'
             )
-        ];
+        );
     }
 
-    public function getEditPageData($id): array
+    public function getEditPageData($id): EditPageData
     {
-        return [
-            'title' => 'Role',
-            '_old' => ($this->modelClass)::find($id),
-            'form' => FormHelper::makeEditForm(
+        return new EditPageData(
+            title: 'Roles',
+            form: FormHelper::makeEditForm(
                 title: 'Edit Role',
                 id: 'form_role_create',
                 action_route: 'roles.update',
@@ -110,8 +111,9 @@ class RoleService implements ModelViewConnector {
                 success_redirect_route: 'roles.index',
                 items: $this->getEditFormElements($id),
                 label_position: 'side'
-            )
-        ];
+            ),
+            instance: ($this->modelClass)::find($id)
+        );
     }
 
     private function formElements(): array

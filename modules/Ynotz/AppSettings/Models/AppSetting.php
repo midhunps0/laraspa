@@ -95,9 +95,9 @@ class AppSetting extends Model
     public function getShowComponent()
     {
         if (!$this->auto_manage || $this->value_type == 'json') {
-            return 'ynotz_appsettings::show_'.Str::snake($this->slug);
+            return 'ynotz_appsettings::display.'.Str::snake($this->slug);
         }
-        return 'ynotz_appsettings::show_'.$this->getViewPartName();
+        return 'ynotz_appsettings::display.'.$this->getViewPartName();
     }
 
     public function formComponent(): Attribute

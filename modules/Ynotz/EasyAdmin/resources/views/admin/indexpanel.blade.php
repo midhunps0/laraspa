@@ -277,6 +277,7 @@
                 createRoute = '{{ $createRoute }}';
                 deleteUrl = '{{ route($destroyRoute, '_0_') }}';
                 createRouteUrl = '{{ route($createRoute) }}';
+                selectedIds = '{{$selected_ids}}'.split('|');
                 $watch('selectedIds', (ids) => {
                     let pageIds = itemIds.slice((paginatorPage - 1) * itemsCount, paginatorPage * itemsCount);
                     pageSelected = pageIds.reduce((result, id) => {

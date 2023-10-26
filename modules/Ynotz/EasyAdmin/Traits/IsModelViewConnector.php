@@ -467,10 +467,11 @@ trait IsModelViewConnector{
         foreach ($filters as $filter) {
             $data = explode('::', $filter);
             $rel = $filtersMap[$data[0]] ?? $data[0];
-            $rel = $data[0];
+            // $rel = $data[0];
+            // dd($rel);
             $op = $this->getSearchOperator($data[1], $data[2]);
             // if($this->isRelation($rel)) {
-            if($this->isRelation(explode('.', $rel)[0])) {
+            if($this->isRelation($rel)) {
                 // dd($rel, $op['op'], $op['val']);
                 $this->applyRelationSearch($query, $rel, $this->relations()[$rel]['filter_column'], $op['op'], $op['val']);
             } else {
@@ -522,13 +523,29 @@ trait IsModelViewConnector{
         } else {
             // Get relation type
             $type = $this->getRelationType($relName);
+
             switch ($type) {
-                case 'onetoone':
+                case 'BelongsTo':
+                    $query->whereHas($relName, function ($q) use ($key, $op, $val) {
+                        $q->where($key, $op, $val);
+                    });
+                    break;
+                case 'HasOne':
+                    // $query->whereHas($relName, function ($q) use ($key, $op, $val) {
+                    //     $q->where($key, $op, $val);
+                    // });
+                    break;
+                case 'HasMany':
+                    // $query->whereHas($relName, function ($q) use ($key, $op, $val) {
+                    //     $q->where($key, $op, $val);
+                    // });
                     break;
                 case 'BelongsToMany':
                     $query->whereHas($relName, function ($q) use ($key, $op, $val) {
                         $q->where($key, $op, $val);
                     });
+                    break;
+                default:
                     break;
             }
         }

@@ -22,11 +22,12 @@ class DefaultArrayExports implements FromArray, WithHeadings
                     $t = explode('.', $col);
                     $rel = $t[0];
                     $field = $t[1];
-                    if (count($row[$rel]) > 0) {
-                        $temprow[$col] = $row[$rel][0][$field];
-                    } else {
-                        $temprow[$col] = $row[$rel][$field];
-                    }
+                    // if (count($row[$rel]) > 0) {
+                    //     dd($rel, $row[$rel], $field);
+                    //     $temprow[$col] = ($row[$rel][0])[$field];
+                    // } else {
+                        $temprow[$col] = ($row[$rel])[$field];
+                    // }
                 } else {
                     $temprow[$col] = $row[$col];
                 }

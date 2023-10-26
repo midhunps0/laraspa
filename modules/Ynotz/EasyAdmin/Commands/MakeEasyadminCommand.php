@@ -2,6 +2,7 @@
 
 namespace Modules\Ynotz\EasyAdmin\Commands;
 
+use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Pluralizer;
 use Illuminate\Filesystem\Filesystem;
@@ -20,7 +21,7 @@ class MakeEasyadminCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Make an Interface Class';
+    protected $description = 'Make Easyadmin Controller & Service classes for a model.';
 
     /**
      * Filesystem instance
@@ -44,11 +45,24 @@ class MakeEasyadminCommand extends Command
      */
     public function handle()
     {
-        $path = $this->getSourceFilePath();
-        // dd(dirname($path));
+        $path = $this->getSourceFilePath('controller');
+
         $this->makeDirectory(dirname($path));
 
-        $contents = $this->getSourceFile();
+        $contents = $this->getSourceFile('controller');
+
+        if (!$this->files->exists($path)) {
+            $this->files->put($path, $contents);
+            $this->info("File : {$path} created");
+        } else {
+            $this->info("File : {$path} already exits");
+        }
+
+        $path = $this->getSourceFilePath('service');
+
+        $this->makeDirectory(dirname($path));
+
+        $contents = $this->getSourceFile('service');
 
         if (!$this->files->exists($path)) {
             $this->files->put($path, $contents);
@@ -64,9 +78,12 @@ class MakeEasyadminCommand extends Command
      * @return string
      *
      */
-    public function getStubPath()
+    public function getStubPath($type)
     {
-        return __DIR__ . '/../stubs/interface.stub';
+        if ($type == 'controller') {
+            return __DIR__ . '/../stubs/controller.stub';
+        }
+        return __DIR__ . '/../stubs/service.stub';
     }
 
     /**
@@ -76,12 +93,28 @@ class MakeEasyadminCommand extends Command
     * @return array
     *
     */
-    public function getStubVariables()
+    public function getStubVariables($type)
     {
-        return [
-            'NAMESPACE'         => 'App\Interfaces',
-            'CLASS_NAME'        => $this->getSingularClassName($this->argument('name')),
-        ];
+        $arr = [];
+        $classNameSingular = $this->getSingularClassName($this->argument('name'));
+        $classNamePluralLower = Str::lower(Str::plural($classNameSingular));
+        switch($type) {
+            case 'controller':
+                $arr = [
+                    'NAMESPACE'         => 'App\Http\Controllers',
+                    'CLASS_NAME'        => $classNameSingular,
+                    'CLASS_NAME_PLURAL_LOWER' => $classNamePluralLower
+                ];
+                break;
+            case 'service':
+                $arr = [
+                    'NAMESPACE'         => 'App\Services',
+                    'CLASS_NAME'        => $classNameSingular,
+                    'CLASS_NAME_PLURAL_LOWER' => $classNamePluralLower
+                ];
+                break;
+        }
+        return $arr;
     }
 
     /**
@@ -90,9 +123,9 @@ class MakeEasyadminCommand extends Command
      * @return bool|mixed|string
      *
      */
-    public function getSourceFile()
+    public function getSourceFile($type)
     {
-        return $this->getStubContents($this->getStubPath(), $this->getStubVariables());
+        return $this->getStubContents($this->getStubPath($type), $this->getStubVariables($type));
     }
 
 
@@ -121,9 +154,12 @@ class MakeEasyadminCommand extends Command
      *
      * @return string
      */
-    public function getSourceFilePath()
+    public function getSourceFilePath($type)
     {
-        return base_path('App/Interfaces') .'/' .$this->getSingularClassName($this->argument('name')) . 'Interface.php';
+        if ($type == 'controller') {
+            return base_path('App/Http/Controllers') .'/' .$this->getSingularClassName($this->argument('name')) . 'Controller.php';
+        }
+        return base_path('App/Services') .'/' .$this->getSingularClassName($this->argument('name')) . 'Service.php';
     }
 
     /**

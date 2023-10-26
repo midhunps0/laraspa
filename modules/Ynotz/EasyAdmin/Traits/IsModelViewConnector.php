@@ -30,6 +30,7 @@ trait IsModelViewConnector{
     protected $relations = [];
     protected $processRelationsManually = false;
     protected $processMediaManually = false;
+    protected $selectionEnabled = false;
 
     public $downloadFileName = 'results';
 

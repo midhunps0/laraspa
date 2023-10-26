@@ -112,7 +112,7 @@
                 },
                 setParam(param) {
                     let keys = Object.keys(param);
-                    if (param[keys[0]].length > 0) {
+                    if (param[keys[0]] && param[keys[0]].length > 0) {
                         this.searches[keys[0]] = param[keys[0]];
                     } else {
                         delete this.searches[keys[0]];
@@ -277,7 +277,10 @@
                 createRoute = '{{ $createRoute }}';
                 deleteUrl = '{{ route($destroyRoute, '_0_') }}';
                 createRouteUrl = '{{ route($createRoute) }}';
+                @if (isset($selected_ids) && $selected_ids != '')
                 selectedIds = '{{$selected_ids}}'.split('|');
+                @endif
+                console.log(selectedIds);
                 $watch('selectedIds', (ids) => {
                     let pageIds = itemIds.slice((paginatorPage - 1) * itemsCount, paginatorPage * itemsCount);
                     pageSelected = pageIds.reduce((result, id) => {
@@ -300,8 +303,8 @@
             @pageselect="processPageSelect();"
             @deleteItem="showDeleteWarning($event.detail.url);"
             {{-- @deleteItem="showDeleteWarning($event.detail.itemid);" --}}
-            @spotsearch.window="doSearch($event.detail)"
-            @setparam.window="setParam($event.detail)"
+            @spotsearch.window="doSearch($event.detail);"
+            @setparam.window="setParam($event.detail);"
             @spotsort.window="doSort($event.detail)"
             @setsort.window="setSort($event.detail)"
             @spotfilter.window="doFilter($event.detail);"

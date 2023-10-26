@@ -11,8 +11,9 @@ class RoleController extends SmartController
 {
     use HasMVConnector;
 
-    public function __construct(public RoleService $connectorService, Request $request){
+    public function __construct(RoleService $connectorService, Request $request){
         parent::__construct($request);
+        $this->connectorService = $connectorService;
     }
 
     public function rolesPermissions()

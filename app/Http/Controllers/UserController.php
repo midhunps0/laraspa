@@ -11,8 +11,9 @@ class UserController extends SmartController
 {
     use HasMVConnector;
 
-    public function __construct(public UserService $connectorService, Request $request){
+    public function __construct(UserService $connectorService, Request $request){
         parent::__construct($request);
+        $this->connectorService = $connectorService;
         // $this->itemName = 'districts';
         // $this->indexView = 'admin.index';
         // $this->showView = 'admin.users.show';

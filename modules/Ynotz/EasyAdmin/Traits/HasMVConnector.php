@@ -25,6 +25,7 @@ trait HasMVConnector {
     private $editView = 'easyadmin::admin.form';
     private $itemsCount = 10;
     private $resultsName = 'results';
+    private Object $connectorService;
 
     public function index()
     {

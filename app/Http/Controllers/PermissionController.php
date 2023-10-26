@@ -11,8 +11,9 @@ class PermissionController extends SmartController
 {
     use HasMVConnector;
 
-    public function __construct(public PermissionService $connectorService, Request $request){
+    public function __construct(PermissionService $connectorService, Request $request){
         parent::__construct($request);
+        $this->connectorService = $connectorService;
         // $this->itemName = 'districts';
         // $this->indexView = 'easyadmin::admin.indexpanel';
         // $this->createView = 'accesscontrol::roles.create';

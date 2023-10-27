@@ -183,6 +183,13 @@ trait OwnsMedia
         return $m ? $m->filename : null;
     }
 
+    public function getSingleMediaForEAForm(string $property): array
+    {
+        return [
+            'path' => $this->getSingleMediaUrl($property),
+            'ulid' => $this->getSingleMediaUlid($property)
+        ];
+    }
     public function getSingleMediaUrl(string $property): string|null
     {
         $m = $this->morphToMany(MediaItem::class, 'mediaowner', 'media_instances', 'mediaowner_id', 'mediaitem_id')
